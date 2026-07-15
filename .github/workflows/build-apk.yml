@@ -1,0 +1,34 @@
+name: Genera APK KeepOne
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Preleva il codice
+      uses: actions/checkout@v4
+    
+    - name: Configura Java JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Concedi i permessi a Gradle
+      run: chmod +x gradlew
+      continue-on-error: true # Evita blocchi se lo script non è ancora presente
+
+    - name: Compila l'APK di Debug
+      run: ./gradlew assembleDebug
+
+    - name: Carica l'APK pronto
+      uses: actions/upload-artifact@v4
+      with:
+        name: KeepOne-Debug-APK
+        path: app/build/outputs/apk/debug/app-debug.apk
